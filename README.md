@@ -1,1 +1,1 @@
-# aokaiz.github.io
+http://aokaiz.github.io
