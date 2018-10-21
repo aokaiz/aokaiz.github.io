@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0-alpha/dist/katex.min.css" integrity="sha384-BTL0nVi8DnMrNdMQZG1Ww6yasK9ZGnUxL1ZWukXQ7fygA1py52yPp9W4wrR00VML" crossorigin="anonymous">
+        <style>
+/*--------------------------------------------------------------------------------------------- * Copyright (c) Microsoft Corporation. All rights reserved. * Licensed under the MIT License. See License.txt in the project root for license information. *--------------------------------------------------------------------------------------------*/ body { font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback"; font-size: 14px; padding: 0 26px; line-height: 22px; word-wrap: break-word; } #code-csp-warning { position: fixed; top: 0; right: 0; color: white; margin: 16px; text-align: center; font-size: 12px; font-family: sans-serif; background-color:#444444; cursor: pointer; padding: 6px; box-shadow: 1px 1px 1px rgba(0,0,0,.25); } #code-csp-warning:hover { text-decoration: none; background-color:#007acc; box-shadow: 2px 2px 2px rgba(0,0,0,.25); } body.scrollBeyondLastLine { margin-bottom: calc(100vh - 22px); } body.showEditorSelection .code-line { position: relative; } body.showEditorSelection .code-active-line:before, body.showEditorSelection .code-line:hover:before { content: ""; display: block; position: absolute; top: 0; left: -12px; height: 100%; } body.showEditorSelection li.code-active-line:before, body.showEditorSelection li.code-line:hover:before { left: -30px; } .vscode-light.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(0, 0, 0, 0.15); } .vscode-light.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(0, 0, 0, 0.40); } .vscode-light.showEditorSelection .code-line .code-line:hover:before { border-left: none; } .vscode-dark.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 255, 255, 0.4); } .vscode-dark.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 255, 255, 0.60); } .vscode-dark.showEditorSelection .code-line .code-line:hover:before { border-left: none; } .vscode-high-contrast.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 160, 0, 0.7); } .vscode-high-contrast.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 160, 0, 1); } .vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before { border-left: none; } img { max-width: 100%; max-height: 100%; } a { text-decoration: none; } a:hover { text-decoration: underline; } a:focus, input:focus, select:focus, textarea:focus { outline: 1px solid -webkit-focus-ring-color; outline-offset: -1px; } hr { border: 0; height: 2px; border-bottom: 2px solid; } h1 { padding-bottom: 0.3em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; } h1, h2, h3 { font-weight: normal; } h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; line-height: auto; } table { border-collapse: collapse; } table > thead > tr > th { text-align: left; border-bottom: 1px solid; } table > thead > tr > th, table > thead > tr > td, table > tbody > tr > th, table > tbody > tr > td { padding: 5px 10px; } table > tbody > tr + tr > td { border-top: 1px solid; } blockquote { margin: 0 7px 0 5px; padding: 0 16px 0 10px; border-left-width: 5px; border-left-style: solid; } code { font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback"; font-size: 14px; line-height: 19px; } body.wordWrap pre { white-space: pre-wrap; } .mac code { font-size: 12px; line-height: 18px; } pre:not(.hljs), pre.hljs code > div { padding: 16px; border-radius: 3px; overflow: auto; } /** Theming */ pre code { color: var(--vscode-editor-foreground); } .vscode-light pre:not(.hljs), .vscode-light code > div { background-color: rgba(220, 220, 220, 0.4); } .vscode-dark pre:not(.hljs), .vscode-dark code > div { background-color: rgba(10, 10, 10, 0.4); } .vscode-high-contrast pre:not(.hljs), .vscode-high-contrast code > div { background-color: rgb(0, 0, 0); } .vscode-high-contrast h1 { border-color: rgb(0, 0, 0); } .vscode-light table > thead > tr > th { border-color: rgba(0, 0, 0, 0.69); } .vscode-dark table > thead > tr > th { border-color: rgba(255, 255, 255, 0.69); } .vscode-light h1, .vscode-light hr, .vscode-light table > tbody > tr + tr > td { border-color: rgba(0, 0, 0, 0.18); } .vscode-dark h1, .vscode-dark hr, .vscode-dark table > tbody > tr + tr > td { border-color: rgba(255, 255, 255, 0.18); } 
+</style>
+<style>
+/* Tomorrow Theme */ /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */ /* Original theme - https://github.com/chriskempson/tomorrow-theme */ /* Tomorrow Comment */ .hljs-comment, .hljs-quote { color: #8e908c; } /* Tomorrow Red */ .hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #c82829; } /* Tomorrow Orange */ .hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #f5871f; } /* Tomorrow Yellow */ .hljs-attribute { color: #eab700; } /* Tomorrow Green */ .hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #718c00; } /* Tomorrow Blue */ .hljs-title, .hljs-section { color: #4271ae; } /* Tomorrow Purple */ .hljs-keyword, .hljs-selector-tag { color: #8959a8; } .hljs { display: block; overflow-x: auto; color: #4d4d4c; padding: 0.5em; } .hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: bold; }
+</style>
+<style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="%E5%A1%91%E6%96%99%E6%88%90%E5%9E%8B%E8%AE%BE%E5%A4%87%E7%BB%83%E4%B9%A0%E9%A2%98">塑料成型设备练习题</h1>
+<h2 id="%E5%88%A4%E6%96%AD%E9%A2%981">判断题(1')</h2>
+<ol>
+<li>机械式振动筛的是利用凸轮装置产生振动的。( )</li>
+<li>圆筒筛的结构特点是筛选效率高、卫生性差、筛网的维修方便。 ( )</li>
+<li>振动筛通常适合筛选粒状树脂和密度较大的填料。 ( )</li>
+<li>塑料混合机除具有均匀混合的效果以外，对物料还具有一定的预塑化作用，有利于后序加工。( )</li>
+<li>在塑料制品成型中，对物料进行筛选、过滤的目的之一是防止金属杂质混入物料中。 ( )</li>
+<li>在成型之前，对物料进行预热可提高物料的混合塑化效率，缩短成型周期。 ( )</li>
+<li>辐射预热干燥不适用于大批量物料的预热干燥。 ( )</li>
+<li>远红外线预热干燥的特点是：设备规模小、制造简便、成本低、易于推广。 ( )</li>
+<li>三辊研磨机是较常用的一种浆料研磨设备。 ( )</li>
+<li>在三辊研磨机中，各辊筒是相向而转的。 ( )</li>
+<li>真空干燥不适用于干燥在加热时易氧化变色的物料。 ( )</li>
+<li>平动筛不适合筛选粉状物料。 ( )</li>
+<li>对原料预热干燥的形式有热风预热干燥、真空干燥和辐射预热干燥。 ( )</li>
+<li>料斗式塑料干燥机主要用于挤塑成型或注塑成型直接加料的过程。 ( )</li>
+<li>塑料混合机混合的时间越长越利于物料混合均匀。 ( )</li>
+<li>塑料混合机的混合机理主要是塑化作用。 ( )</li>
+<li>塑料混合机主要通过离心率、循环、旋转等作用来混合物料。 ( )</li>
+<li>搅拌装置主要由搅拌桨和主轴传动部分组成，通常大搅拌浆采用较慢的搅拌速度。 ( )</li>
+<li>在开炼机中，调距转轮顺时针旋转时辊筒间距减小，反之增大。 ( )</li>
+<li>连续密炼机具有很好的自洁性。 ( )</li>
+<li>挤出成型过程是一种间断式生产过程，所以生产效率相对较低。 ( )</li>
+<li>挤塑成型设备是三大成型设备之一，通过它来完成注塑产品的生产。 ( )</li>
+<li>挤出生产线中的挤出模具是挤出辅机的组成部分之一。 ( )</li>
+<li>螺杆长径比是指螺杆有效工作长度与螺杆半径D的比值。 ( )</li>
+<li>物料在挤出过程中热量的来源主要有两个，一个是机筒外部加热器提供的热量，另一个是物料与机筒、螺杆之间的剪切和物料与物料之间所产生的摩擦所产生的热量。 ( )</li>
+<li>挤出机的螺杆直径对挤出产量影响较小。 ( )</li>
+<li>随螺槽深度的增加，挤出机的产量会相应增大。 ( )</li>
+<li>挤出机主机的结构和组成随制品类型的变化而变化。 ( )</li>
+<li>目前挤塑机最常见的形式是中小型卧式单螺杆非排气整体式普通成型挤塑机，简称普通挤塑机。( )</li>
+<li>挤出机的挤压系统主要由螺杆、机筒、连接体及喷嘴组成。 ( )</li>
+<li>在挤出设备中，若用孔径不同的两层过滤网，应将孔径较细的网紧贴分流板。 ( )</li>
+<li>尖形的螺杆头利于加工高黏度、热稳定性差的物料。 ( )</li>
+<li>双螺杆主要由挤压系统、传动系统、加热冷却系统、排气系统、加料系统和电气控制系统等系统组成。 ( )</li>
+<li>双螺杆挤出机可分为啮合双螺杆和非啮合双螺杆，其中，啮合型适合做产品，而非啮合型适合做材料的改性。 ( )</li>
+<li>在双螺杆挤出机组成的挤出生产线中，冷却辅机如果是喷淋式的，其冷却效率要比浸浴式低。 ( )</li>
+<li>固体输送理论假设螺槽是矩形的且深度不变。( )</li>
+<li>横流是熔体在螺杆均化段发生的流动类型之一，又称为环流，通常只考虑它对制品质量的影响而忽略对产量的影响。 ( )</li>
+<li>在实际生产中用封闭挤出来清洗机筒或更换物料。 ( )</li>
+<li>一根好的螺杆，在保证塑化质量的前提下，名义比功率应尽可能高。 ( )</li>
+<li>对于结晶性大、熔融温度范围窄的物料通常熔融段长度L2设计得短一些。( )</li>
+<li>分离型螺杆中的BM螺杆，副螺棱与主螺棱的相交始于加料段末，终于熔融段初。 ( )</li>
+<li>向内异向旋转双螺杆的“压延效应”比向外异向旋转更严重。( )</li>
+<li>对于要求制品透明度高的薄膜生产通常采用平挤下吹法。 ( )</li>
+<li>注射机通常由注射系统、合模系统、液压传动系统和电气控制系统组成。 ( )</li>
+<li>注塑系统主要由塑化装置、料斗、计量装置、螺杆传动装置、注塑油缸、注塑座整体移动油缸组成。 ( )</li>
+<li>注塑系统主要由开合模装置、顶出装置、安全保护装置等组成。 ( )</li>
+<li>螺杆式注塑系统是目前应用最广泛的注塑系统。 ( )</li>
+<li>在注塑过程中射台前进通常在合模前完成。 ( )</li>
+<li>注塑机参数主要包括理论注塑容积、注塑压力、注塑速率、塑化能力等。 ( )</li>
+<li>注射速率是指在注射时单位时间内从喷嘴射出的熔料体积流率。 ( )</li>
+<li>注塑机只能用于热塑性塑料的注射成型。 ( )</li>
+<li>注塑机的锁模力一定要大于注塑压力。 ( )</li>
+<li>注塑机锁模时，一定要达到最大锁模力。 ( )</li>
+<li>为了防止熔体“流延”，低发泡注塑机选用锁闭式注嘴，并通过降低背压抑制发泡剂分解 ( )</li>
+<li>注塑机的动模板不属于注塑系统。 ( )</li>
+<li>全液压注塑机的开合模行程与模具的厚度没有关系。 ( )</li>
+<li>液控锁闭式注嘴主要用于加工低黏度的物料。 ( )</li>
+<li>一般对于中低粘度的物料，注塑机螺杆要用止逆型螺杆头。 ( )</li>
+<li>电动注塑机具有高精度、低碳、低排放的特点。 ( )</li>
+<li>机筒的壁厚越厚越利于节能减排，能在一定程度上提高厂家利润。 ( )</li>
+<li>柱塞式注射机的缺点是塑化均一性差、压力损失大、工艺条件不稳定。 ( )</li>
+<li>注塑机是一种生产效率高，易于自动化生产的设备。 ( )</li>
+<li>注射成型可用于热塑性塑料的成型，也可用于热固性塑料的成型，但不能用于橡胶。 ( )</li>
+<li>合模装置是为保证成型模具可靠闭紧、实现模具启闭动作及顶出制品的机械部件。 ( )</li>
+<li>PVC塑料注射成型时通常选用的螺杆头部结构形式为分流型。 ( )</li>
+<li>开合模速度是反应注塑机工作效率的重要参数，会直接影响到成型周期的长短。 ( )</li>
+<li>热固性塑料注射成型时，物料在料筒中的停留时间的控制幅度可以大于热塑性塑料。 ( )</li>
+<li>压延成型设备由供料系统、压延成型机、压延辅机、加热冷却系统以及电气控制系统五大部分组成。 ( )</li>
+</ol>
+<h2 id="%E9%80%89%E6%8B%A9%E9%A2%982">选择题(2')</h2>
+<ol>
+<li>下列有关塑料成型设备说法不正确的是 ( ) 。
+A、 挤塑、注塑和压延成型设备被称为三大成型设备
+B、 注塑成型设备比挤塑成型设备起源早
+C、 塑料成型设备的完善程度对塑料制品的产量和质量、改善劳动条件和节能降耗等具有重要作用
+D、 压延成型设备发展具有大型化、高速化、精密化、高自动化和结构多样化的特点</li>
+<li>筛选的设备有以下几种类型 ( )。
+（1）圆筒筛  （2）振动筛  （3）平动筛
+A、（1）（2）    B、（1）（3）    C、（2）（3）    D、（1）（2）（3）</li>
+<li>下列不属于振动筛结构特点的是 ( )。
+A、筛选效率低     B、筛网维修方便     C、省电     D、噪声大</li>
+<li>以下关于预热干燥的说法有误的是 ( )。
+A、 在成型之前，对物料进行预热，可提高物料的混合塑化效率，缩短成型周期和改善制品质量
+B、 对物料进行干燥是为了减小物料的含湿量，所以含湿量越小越好
+C、 过多的含湿量会导致物料成型时在高温机筒内挥发成气体
+D、 过多含湿量也将会导致物料水解而引起的黏度下降，制品气泡和翘曲变形等</li>
+<li>下列选项中不属于组成料斗式干燥机设备的是 ( )。
+A、 温控箱    B、 电热器    C、 分离器    D、 物料分散器</li>
+<li>下列不属于预热干燥的形式的是 ( )。
+A、热风预热干燥     B、太阳能干燥     C、真空干燥     D、辐射预热干燥</li>
+<li>下列关于筛选与过滤的目的说法错误的是 ( )。
+A、去除金属杂质，保证设备安全          B、去除杂质和粒径较大的物料
+C、确保物料的细度与均匀度              D、对不同物料进行分类</li>
+<li>以下不属于塑料普通混合的混合机理的是 ( )。
+A、扩散混合      B、挤压混合      C、剪切混合      D、对流混合</li>
+<li>下列对塑料混合机机座叙述不正确的是 ( )。
+A、具有良好的缓冲吸震作用
+B、是安装驱动电动机的支撑体
+C、两侧面设叶窗孔供更换皮带使用
+D、机座具有良好的电绝缘性</li>
+<li>对高混机的混合效果有影响的因素有 ( )  。
+①物料特性  ②搅拌桨形状  ③搅拌速度  ④温度
+⑤加料量和混合时间  ⑥助剂加入量、加入次数和加入方式
+A、 ①②③   B、 ②③④  C、 ①③④⑤  D、 ①-⑥都是</li>
+<li>以下对研磨机说法错误的是 ( )。
+A、 三辊研磨机的三个辊筒的速比为1:3:6
+B、 常用的研磨设备有三辊研设备磨机和球辊机
+C、 经球辊机研磨后的浆料细度应保证在50um以下
+D、 物料在三辊研磨机中研磨主要靠其受到辊筒的挤压和剪切作用</li>
+<li>主要用于挤塑和注塑成型直接加料的预热干燥设备是  ( )。
+A、 远红外线预热干燥设备                B、 真空料斗干燥机
+C、 烘箱                                D、 料斗式塑料干燥机</li>
+<li>塑料混合机的折流板的主要作用是 ( )
+<code>A. 加热 B. 加料 C. 防止杂质混入 D. 使物料形成涡流</code></li>
+<li>下列不属于塑料混合机的组成部分是（ ）。
+A、混合锅     B、回转盖     C、折流板     D、机罩</li>
+<li>下列属于塑料混合机的工作原理是（ ）。
+A、离心力和循环运动                 B、摩擦和外加热
+C、旋转和挡流板作用                 D、以上都是</li>
+<li>塑料混合机主传动轴包括的结构有  ( )。
+A、 搅拌桨      B、 向心轴承      C、 排料装置      D、 轴承座</li>
+<li>关于塑料混合机的保养，以下说法不正确的是（ ）。
+A、定期对各润滑点注入润滑油              B、定期检查三角皮带的松紧程度
+C、混合机初次运转10h后应全面检查        D、驱动电动机启动过载导致的停机不可超过3次</li>
+<li>下列关于物料在连续混炼机混炼室中所受作用的说法错误的是 ( )。
+A、 两转子间的折卷作用               B、物料与物料之间的摩擦作用
+C、两转子棱间的搅拌作用              D、两转子间的轴向往返切割作用</li>
+<li>物料混炼的主要部件，又被称为密炼机的心脏的是 ( )
+<code>A. 机筒 B. 减速机 C. 转子 D. 加料口</code></li>
+<li>混炼机转子中最常用的转子形状是 ( )
+<code>A. 圆筒形 B. 椭圆形 C. 三角形 D. 方形</code></li>
+<li>CIM型、DSM型及FCM型连续混炼机结构的区别主要体现在 ( )。
+A、排料段      B、喂料段       C、带螺旋凸棱的混炼段     D、以上都是</li>
+<li>关于连续密炼机，下列说法不正确的是   ( )。
+A、 转子是物料混炼的主要部件
+B、 通过调节加料速度、转子转速等可提高塑化程度
+C、 比双螺杆混炼挤塑机拥有更好的自清洁功能
+D、 CIM型连续密炼机可分为排料、混炼和喂料三段</li>
+<li>与其他成型方法相比，挤塑成型的特点不包括 ( )
+<code>A. 成型过程具有连续性 B. 操作维修简单 C. 应用范围广 D. 能一次成型出形状复杂的制品</code></li>
+<li>挤出成型的工艺流程主要包括 ( )。
+A、原料的准备、挤出物定型与冷却、挤出成型、干燥、预热、制品的牵引卷取
+B、原料的准备、挤出物定型与冷却、干燥、预热、挤出成型、制品的牵引卷取
+C、原料的准备、预热、干燥、挤出成型、挤出物定型与冷却、制品的牵引卷取
+D、原料的准备、挤出物定型与冷却、制品的牵引卷取、挤出物定型、干燥、预热</li>
+<li>下列关于加料段的说法错误的是（ ）。
+A、 加料段的作用是加热和输送物料         B．加料段物料始终保持固体状态
+C．加料段通常采用等深变距的螺杆          D．挤出结晶性塑料加料段要长</li>
+<li>挤出成型设备各零件中对挤出质量影响较大的是 ( )。
+A、液压泵        B、加热圈        C、螺杆        D、料斗</li>
+<li>挤出螺杆加料段中固体塑料的输送过程主要是靠 ( )。
+A、螺纹推力         B、油缸推力         C、摩擦力        D、以上都不是</li>
+<li>为提高加料段物料输送能力，常采取的措施不包括 ( )。
+A、 冷却螺杆，使螺杆的温度低于料筒        B、 提高螺杆的转速
+C、 在料筒内壁开设纵向沟槽                D、 增大螺杆料筒间隙</li>
+<li>挤出成型过程中，制品横截面是靠以下部件得到的（ ）。
+A、机头       B、口模      C、料筒       D、分流梭</li>
+<li>为解决普通螺杆存在的熔融效率低、塑化不均匀等缺点，常采用的措施不包括 ( )。
+A、采用高效螺杆                     B、 加大螺杆的长径比
+C、 采用结构合理的机头              D、 提高螺杆的转速</li>
+<li>以下关于影响熔体输送率的因素的说法错误的是  ( )。
+A、螺槽深度越小，熔体输送率受机头压力影响越小
+B、螺纹升角越大，熔体输送率越高
+C、螺槽均化段长度增长有利于熔体输送率的提高
+D、螺棱宽度的增加有利于熔体输送率的提高</li>
+<li>塑料挤出机机筒通常采用的加热形式是 ( )。
+A、 水蒸气加热       B、 酒精加热        C、电加热        D、 燃煤加热</li>
+<li>某塑料厂要将原生产板材的挤出机组改为生产管材，设备应作的调整是 ( )。
+A、 更换挤出主机、机头和保留其他辅机       B、 更换机头保留挤出主机和其他辅机
+C、 挤出主机、机头和其他辅机均应更换       D、 更换机头和其他辅机，保留挤出机</li>
+<li>挤出机的螺杆分为 ( )。
+A、加料段、熔融段、均化段               B、加料段、融化段、挤出段
+C、熔融段、均化段、挤出段               D、融化段、熔融段、挤出段</li>
+<li>属于挤塑机主机部分的是 ( )
+<code>A. 定型装置 B. 牵引装置 C. 拉伸装置 D 加料装置</code></li>
+<li>属于挤塑机辅机部分的是 ( )
+<code>A. 螺杆 B. 机头 C. 料斗 D. 机筒</code></li>
+<li>型号表示为SJRG-Z65×25-60的挤出软管机组的螺杆直径为 ( )
+<code>A. 65mm B. 25mm C. 60mm D. 60cm</code></li>
+<li>对于SJ-150×15B型号，下列说法错误的是    ( )。
+A、  150表示该机器的直径为150mm          B、  B表示该机器是第二次改进机
+C、  SJ表示该机器为塑料注塑机              D、 15表示该机器的螺杆长径比为15:1</li>
+<li>以下螺杆直径合理的是（ )
+<code>A. 33mm B. 34mm C 35mm D 36mm</code></li>
+<li>螺杆的作用不包括 ( )。
+A、 输送物料       B、 传热塑化物料       C、 成型物料        D、混合均化物料</li>
+<li>增大螺杆的长径比不能 ( )。
+A、 改善塑料的温度分布                   B．降低挤出机的功率消耗
+C．减少挤出时的逆流和漏流                D．使物料混合更均匀</li>
+<li>下列关于螺杆结构参数说法不正确的是 ( )。
+A、螺棱宽太小会使漏流增加，导致产量降低
+B、螺棱宽太大会增加螺棱上的动力消耗，有局部过热的危险
+C、螺杆与料筒的间隙减小，不利于物料的熔融混合
+D、物料与料筒的摩擦系数越小，产量越能</li>
+<li>由机筒内表面对螺槽中的熔体在垂直螺棱方向上的作用力引起的流动是 ( )
+<code>A. 正流 B. 倒流 C. 横流 D. 漏流</code></li>
+<li>熔体在挤出机螺杆中的流动可看成以下四种流动的组合 ( )。
+A、 正流，逆流，横流，漏流                  B、 正流，逆流，横流，竖流
+C、 正流，负流，横流，漏流                  D、 正流，逆流，横流，竖流</li>
+<li>排气挤出机生产时，要使流量平衡，挤出稳定进行，均化段的均化能力Q2与压缩段的熔融能力Q1间的关系应满足 ( )。
+A、 Q1&gt;Q2      B、 Q1&lt; Q2     C、 Q1 =Q2     D、 以上均可</li>
+<li>分流板和过滤网的作用不包括 ( )
+<code>A. 改变物料运动方向 B. 阻止金属等杂质和未塑化的物料进入机头 C. 改变熔体压力 D. 加强物料混合</code></li>
+<li>双螺杆挤出机按螺杆旋转的方向不同，可分为 ( )两大类
+A、 顺向旋转，逆向旋转                     B、 正向旋转，负向旋转
+C、 同向旋转，异向旋转                     D、 正向旋转，逆向旋转</li>
+<li>以下挤出机中自洁作用最高的是 ( )挤出机
+<code>A. 单螺杆 B. 啮合同向双螺杆 C. 啮合异向双螺杆 D. 行星式</code></li>
+<li>非啮合型平行双螺杆的螺槽是 ( )
+<code>A. 横向开放 B. 纵向开放 C. 纵横向都开放 D. 纵横向都封闭</code></li>
+<li>以下螺槽结构中具有最大的强制输送能力的是 ( )
+<code>A. 纵、横向封闭 B. 纵向封闭，横向开放 C. 纵向开放，横向封闭 D. 纵、横向开放</code></li>
+<li>关于锥形双螺杆挤塑机，以下说法不正确的是 ( )
+<code>A. 自洁能力强 B. 均化段螺杆直径小 C. 可以低温挤出 D. 可安装较大尺寸的轴承</code></li>
+<li>属于剪切元件的是 ( )元件
+<code>A. 双头螺棱 B. 双头捏合盘 C. 齿形 D. 六棱柱</code></li>
+<li>属于混合元件的是 ( )元件
+<code>A. 双头螺棱 B. 双头捏合盘 C. 齿形 D. 六棱柱</code></li>
+<li>以下不属于薄膜吹塑成型常用方法的是 ( )
+<code>A. 上吹法 B. 下吹法 C. 斜吹法 D. 平吹法</code></li>
+<li>11、挤出吹塑薄膜的工艺流程可分为 ( )。
+A、 中吹法，下吹法，低吹法              B、 上吹法，下吹法，平吹法
+C、 中吹法，平吹法，下吹法              D、 上吹法，中吹法，下吹法</li>
+<li>吹膜辅机中人字板的作用不包括 ( )
+<code>A. 将薄膜卷到卷轴上 B. 稳定膜管 C. 逐渐将圆筒形的膜管折叠成平面状 D. 进一步冷却薄膜</code></li>
+<li>锥形双螺杆挤塑机的轴承布置方案是 ( )
+<code>A. 两个推力轴承组的并列布置 B. 两个推力轴承组的错列布置 C. 一个推力轴承组和一个大直径推力轴承的错列布置 D. 两个大直径推力轴承的错列布置</code></li>
+<li>有关注塑成型与其他成型方法相比具有的特点的说法不正确的是 ( )。
+A、成型周期短                   B、制品外观质量好，后加工量多
+C、生产效率高，易于实现自动化   D、能一次成型出形状复杂，精密度高和带有嵌件的塑料制品</li>
+<li>普通挤塑机安装时水平度应控制在 ( )以内
+<code>A. 0.5‰ B. 1‰ C. 2‰ D. 3‰</code></li>
+<li>按照塑化和注塑方式的分类注塑机可分为几种类型 ( )。
+A、1种     B、2种   C、3种   D、4种</li>
+<li>关于螺杆式注塑机与柱塞式注塑系统相比具有的优点的叙述不正确的是 ( )。
+A、螺杆式注塑机不仅有外加热还有内部的剪切摩擦产生的热量
+B、由于螺杆有刮料作用，可以减少熔体的滞留和分解，可用于热稳定性差的物料
+C、不能对物料直接进行着色
+D、由于螺杆式注塑系统的塑化效果好，从而可以降低机桶温度</li>
+<li>与其他成型方法相比，注塑成型的特点不包括 ( )
+<code>A. 能一次成型出形状复杂的制品 B. 成型周期短 C. 对各种物料的加工适应性强 D. 具有连续性，可成型任意长度的制品</code></li>
+<li>有关注塑机合模系统的说法不正确的是 ( )。
+A、应有制品顶出，调节模板间距、侧抽芯等附属装置
+B、应有足够大的模板面积，模板间距和模板行程
+C、应设有调节装置，安全保护装置<br>
+D、应有较低的合模速度</li>
+<li>SZ-160/800的理论注塑容积为 ( )。
+A、160cm2   B、800mm2    C、160mm2   D、800cm2</li>
+<li>注塑机开合模过程中，开模距离过短，会造成 ( )。
+A、 取件困难      B、 生产效率高
+C、 损毁模具      D、 成型周期短</li>
+<li>注塑机的合模过程的参数设置非常重要，此过程中低压低速试合模是为了保护 ( )。
+A、 设备       B、 模具        C、 产品       D、嵌件</li>
+<li>普通注塑螺杆根据其结构特点也可分为三段，从后向前依次是 ( )。
+A、 计量段-压缩段-加料段          B、 加料段-计量段-压缩段
+C、 压缩段-加料段-计量段          D、 加料段-压缩段-计量段</li>
+<li>注塑机空循环时间不包括 ( )的时间。
+A、 塑化     B、 移模      C、 注射座前进与后退     D、 开合模</li>
+<li>PVC塑料注射成型时，通常选用的螺杆头部结构形式为 ( )。
+A、 环形        B、 圆头       C、 尖头         D、 分流型</li>
+<li>关于柱塞式注塑系统结构特点说法错误的是 ( )。
+A．注塑压力损失小式                  B．物料塑化不均
+C．充模速度不均，成型过程不稳定      D．塑化能力的提高受限制</li>
+<li>下列不是塑化装置的是 ( )
+A、 顶杆       B、螺杆         C．机筒          D、注嘴</li>
+<li>注塑制品冷却与螺杆预塑化是同时进行的，通常情况下要求预塑化时间比制品冷却时间 ( )
+A、 相等     B、 大     C、 小      D、不确定</li>
+<li>注塑机进行保压是为了保证制品的 ( )
+A、 致密性     B、 尺寸精度     C、 力学性能     D、以上都是</li>
+<li>普通注塑螺杆与普通挤塑螺杆相比拥有自己的特征，以下对其特征说法不正确的是 ( )。<br>
+A．具有止逆结构                       B．塑化压力可以通过背压来调节
+C．加料段长度比挤塑机螺杆的加料段短   D．注塑螺杆的塑化能力并不是影响生产能力的主要因素</li>
+<li>注塑机的基本参数不包括 ( )。
+A、注塑系统的基本参数    B、合模系统的基本参数
+C、注塑机的总重量        D、液压系统的基本参数</li>
+<li>下列不属于注塑机合模系统的基本参数是 ( )。
+A、合模系统的基本尺寸     B、射台前进后退速度      C、合模时间         D、合模力</li>
+<li>关于液压马达传动特点的说法正确的是 ( )。
+A、传动特性硬                                         B、启动惯性大
+C、液压元件体积小，质量轻，简化了注塑系统的结构       D、对螺杆没有过载保护</li>
+</ol>
+<h2 id="%E5%A1%AB%E7%A9%BA%E9%A2%981">填空题(1')</h2>
+<ol>
+<li>常见的筛选设备主要有( )、( )和( )。</li>
+<li>在成型之前，对物料进行( )，可提高物料的混合塑化效率，缩短成型周期，改善制品质量，而对物料进行干燥则是为了减少物料过多的( )。</li>
+<li>连续密炼机中，物料受到转子与密炼室内壁的( )作用、两个转子棱间的( )作用、两个转子间的( )作用和( )作用。</li>
+<li>挤塑成型设备由( )、( )和( )三大部分组成。</li>
+<li>挤塑成型设备按装配结构可分为( )挤塑机和( )挤塑机。</li>
+<li>挤塑机一般在( )、( )、( )三个部分进行冷却。</li>
+<li>普通挤塑机的工作过程可以分为( )、( )和( )三个阶段。</li>
+<li>挤塑过程中的三大波动为( )、( )和( )波动。</li>
+<li>人们常常把挤塑过程中的( )、( )和( )称为三大波动，其产生的原因主要有( )设计不合理、( )设计不合理、( )设计不合理、( )不稳定、( )不稳定、( )不稳定。</li>
+<li>熔体在普通挤塑机均化段中有四种流动状态，即( )、( )、( )、( )。</li>
+<li>组合式螺杆根据实现功能的不同，可将螺杆元件分为( )(包括正向螺棱元件和反向螺棱元件）、( )、( )及( )。</li>
+<li>挤出机的流量通常随螺杆转速n的增大而( ),随机头压力的增大而( )。</li>
+<li>评价螺杆性能的标准：( )、( )、( )、( )、( )、( )。</li>
+<li>行星式挤塑机由于其特殊的结构和工作原理，使其具有以下特点：物料接触面积( )，便于热量交换，因而塑化效率( )；物料在挤塑机中停留时间( )，剪切作用( )。</li>
+<li>注塑机综合性能参数主要包括( )、( )等，注塑系统的基本参数有( )、( )、( )、( )。</li>
+<li>压延机的参数表征主要有( )，( )，( )，( )，( )，( ) 等。</li>
+<li>双螺杆挤塑机的传动箱由( )和( )两大部分组成。</li>
+<li>薄膜的吹塑成型可分为( )、( )和( )三种。</li>
+</ol>
+<h2 id="%E7%AE%80%E7%AD%94%E9%A2%985">简答题(5')</h2>
+<ol>
+<li>分流板和过滤网的作用是什么？安装时有什么要求？</li>
+<li>用框图画出一个注塑成型循环周期。</li>
+</ol>
+<h2 id="%E8%AE%A1%E7%AE%97%E9%A2%985">计算题(5')</h2>
+<h2 id="%E7%9C%8B%E5%9B%BE%E9%A2%9810">看图题(10')</h2>
+
+    </body>
+    </html>
