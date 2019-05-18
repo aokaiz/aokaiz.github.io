@@ -10,7 +10,7 @@
 - [Anki介绍](https://www.jianshu.com/p/324f04e423e4)
 
 ## 语音
-- [Word朗读功能(百度经验)]
+- [Word朗读功能(百度经验)](https://jingyan.baidu.com/article/a3a3f81121ade78da2eb8af1.html)
 - [Siri用法](https://www.jianshu.com/p/7492714a1823)
 - [华为手机语音助手如何实现翻译功能](https://jingyan.baidu.com/article/3c343ff7b1a56c0d3779633e.html)
 - [Google Speech](https://cloud.google.com/speech-to-text)
