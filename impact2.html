@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>增韧改性仿真</title>
+  <style>
+    :root{
+      --bg:#f7f8fa; --card:#ffffff; --text:#1f2937; --muted:#6b7280; --brand:#2563eb; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+      --ring:#e5e7eb; --shadow:0 10px 25px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, "Helvetica Neue", Arial}
+    .container{max-width:1100px;margin:0 auto;padding:16px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 16px}
+    .title{font-weight:800;font-size:clamp(20px,3.5vw,32px);letter-spacing:.3px}
+    .subtitle{color:var(--muted);font-size:13px}
+    .grid{display:grid;gap:16px;grid-template-columns:1fr}
+    @media (min-width:980px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;position:relative}
+    .card h2{margin:.2rem 0 .2rem;font-size:18px}
+    .card p.small{margin:.1rem 0;color:var(--muted);font-size:12px}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .grow{flex:1}
+    .ctrl{display:grid;gap:8px;margin:8px 0}
+    .ctrl label{font-size:13px;color:var(--muted)}
+    input[type=range]{width:100%;appearance:none;height:8px;border-radius:999px;background:linear-gradient(90deg,var(--brand),#60a5fa);outline:none}
+    input[type=range]::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--brand);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+    input[type=number]{width:88px;padding:8px 10px;border:1px solid var(--ring);border-radius:10px;background:#fff}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:700}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
+    .badge.ok{background:#ecfdf5;color:#065f46}
+    .badge.good{background:#eff6ff;color:#1e40af}
+    .badge.warn{background:#fff7ed;color:#9a3412}
+    .badge.bad{background:#fef2f2;color:#7f1d1d}
+    .meter{height:14px;background:#eef2ff;border-radius:999px;overflow:hidden;position:relative}
+    .meter>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#93c5fd,#60a5fa,#3b82f6);transition:width .5s ease}
+    .kpi{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+    .big{font-size:clamp(28px,6vw,42px);font-weight:900;letter-spacing:.5px}
+    .unit{font-weight:700;color:var(--muted)}
+    .ghost{border:1px dashed var(--ring);background:transparent}
+    .note{font-size:12px;color:var(--muted)}
+    .footer{margin-top:20px;text-align:center;color:var(--muted);font-size:12px}
+    .btn{border:0;background:var(--brand);color:#fff;padding:8px 12px;border-radius:12px;box-shadow:var(--shadow);cursor:pointer}
+    .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+    /* fun pulse */
+    .pulse{animation:pulse 1.6s ease-in-out 1}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+    /* mobile-friendly tap targets */
+    .tap{padding:8px 10px;border-radius:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="title">增韧改性仿真</div>
+        <div class="subtitle">适配手机与PC · 实时交互 · 动态预测</div>
+      </div>
+      <button class="btn tap" id="resetAll">重置</button>
+    </header>
+
+    <div class="grid">
+      <!-- 卡片1：HDPE/LDPE 共混 -->
+      <section class="card" id="cardA">
+        <div class="row" style="justify-content:space-between">
+          <h2>预测一：HDPE / LDPE 共混</h2>
+          <span class="pill">目标：≥1000 合格，≥1200 优秀</span>
+        </div>
+        <p class="small">质量分数之和始终为 100（%）。初始 HDPE=100，LDPE=0。</p>
+
+        <div class="ctrl">
+          <label>HDPE（%）</label>
+          <div class="row">
+            <input class="grow" type="range" id="a_hdpe" min="0" max="100" step="1" value="100"/>
+            <input type="number" id="a_hdpe_n" min="0" max="100" step="1" value="100"/>
+          </div>
+        </div>
+        <div class="ctrl">
+          <label>LDPE（%）</label>
+          <div class="row">
+            <input class="grow" type="range" id="a_ldpe" min="0" max="100" step="1" value="0"/>
+            <input type="number" id="a_ldpe_n" min="0" max="100" step="1" value="0"/>
+          </div>
+        </div>
+
+        <div class="meter" aria-hidden="true"><i id="a_bar"></i></div>
+        <div class="kpi">
+          <div>
+            <div class="big" id="a_value">0</div>
+            <div class="unit">Impact Strength</div>
+          </div>
+          <div>
+            <span class="badge warn" id="a_status">未达标</span>
+          </div>
+        </div>
+        <p class="note" id="a_sum_note">当前配比：HDPE <b>100</b>% + LDPE <b>0</b>% = 100%</p>
+      </section>
+
+      <!-- 卡片2：HDPE/PP/SBS 共混 -->
+      <section class="card" id="cardB">
+        <div class="row" style="justify-content:space-between">
+          <h2>预测二：HDPE / PP / SBS 共混</h2>
+          <span class="pill">目标：≥60 合格，≥80 优秀（SBS ≤ 50%）</span>
+        </div>
+        <p class="small">PP 自动补足至 100%。初始 PP=100，HDPE=0，SBS=0。</p>
+
+        <div class="ctrl">
+          <label>HDPE（%）</label>
+          <div class="row">
+            <input class="grow" type="range" id="b_hdpe" min="0" max="100" step="1" value="0"/>
+            <input type="number" id="b_hdpe_n" min="0" max="100" step="1" value="0"/>
+          </div>
+        </div>
+        <div class="ctrl">
+          <label>SBS（%）<span id="b_sbs_tip" class="badge bad" style="display:none;margin-left:8px">SBS 不得超过 50%</span></label>
+          <div class="row">
+            <input class="grow" type="range" id="b_sbs" min="0" max="50" step="1" value="0"/>
+            <input type="number" id="b_sbs_n" min="0" max="50" step="1" value="0"/>
+          </div>
+        </div>
+        <div class="ctrl ghost">
+          <label>PP（%）</label>
+          <div class="row">
+            <input class="grow" type="range" id="b_pp" min="0" max="100" step="1" value="100" disabled/>
+            <input type="number" id="b_pp_n" min="0" max="100" step="1" value="100" disabled/>
+          </div>
+        </div>
+
+        <div class="meter" aria-hidden="true"><i id="b_bar"></i></div>
+        <div class="kpi">
+          <div>
+            <div class="big" id="b_value">0</div>
+            <div class="unit">Impact Strength</div>
+          </div>
+          <div>
+            <span class="badge warn" id="b_status">未达标</span>
+          </div>
+        </div>
+        <p class="note" id="b_sum_note">当前配比：HDPE <b>0</b>% + PP <b>100</b>% + SBS <b>0</b>% = 100%</p>
+      </section>
+    </div>
+
+    <div class="footer">© 2025 增韧改性仿真 · 单文件版 CIIT aokaiz</div>
+  </div>
+
+<script>
+  // ----------- 数值动画（平滑计数） -----------
+  function animateNumber(el, to, duration=600){
+    const from = parseFloat(el.textContent.replace(/[^0-9.\-]/g, '')) || 0;
+    const t0 = performance.now();
+    function step(t){
+      const p = Math.min(1, (t - t0)/duration);
+      const val = from + (to - from)*(1 - Math.pow(1-p, 3)); // ease-out
+      el.textContent = val.toFixed(2);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ----------- 公式计算 -----------
+  function calcA(HDPE, LDPE){
+    // Impact_Strength = 1402.0766 + (-0.0000)*HDPE^2 + (0.0000)*HDPE*LDPE + (0.0000)*LDPE^2
+    //                 + (-0.0012)*HDPE^3 + (-0.0011)*HDPE^2*LDPE + (0.0016)*HDPE*LDPE^2 + (-0.0003)*LDPE^3
+    const c0 = 1402.0766;
+    const v = c0
+      + (-0.0000)*HDPE*HDPE
+      + ( 0.0000)*HDPE*LDPE
+      + ( 0.0000)*LDPE*LDPE
+      + (-0.0012)*Math.pow(HDPE,3)
+      + (-0.0011)*Math.pow(HDPE,2)*LDPE
+      + ( 0.0016)*HDPE*Math.pow(LDPE,2)
+      + (-0.0003)*Math.pow(LDPE,3);
+    return v;
+  }
+
+  function calcB(HDPE, PP, SBS){
+    // Impact_Strength = -0.0000*1 + -0.0000*PP + 0.0000*HDPE + -0.0000*SBS
+    //  + -0.0000*PP^2 + 0.0000*PP*HDPE + 0.0000*PP*SBS + 0.0000*HDPE^2 + 0.0000*HDPE*SBS + -0.0000*SBS^2
+    //  + -0.0001*PP^3 + -0.0002*PP^2*HDPE + -0.0004*PP^2*SBS + -0.0002*PP*HDPE^2 + 0.0008*PP*HDPE*SBS + 0.0000*PP*SBS^2
+    //  + -0.0002*HDPE^3 + 0.0008*HDPE^2*SBS + -0.0015*HDPE*SBS^2 + 0.0002*SBS^3 + 131.5583
+    const base = 131.5583 + (-0.0000)*1;
+    const v = base
+      + (-0.0000)*PP + ( 0.0000)*HDPE + (-0.0000)*SBS
+      + (-0.0000)*PP**2 + ( 0.0000)*PP*HDPE + ( 0.0000)*PP*SBS + ( 0.0000)*HDPE**2 + ( 0.0000)*HDPE*SBS + (-0.0000)*SBS**2
+      + (-0.0001)*PP**3 + (-0.0002)*PP**2*HDPE + (-0.0004)*PP**2*SBS + (-0.0002)*PP*HDPE**2 + ( 0.0008)*PP*HDPE*SBS + ( 0.0000)*PP*SBS**2
+      + (-0.0002)*HDPE**3 + ( 0.0008)*HDPE**2*SBS + (-0.0015)*HDPE*SBS**2 + ( 0.0002)*SBS**3;
+    return v;
+  }
+
+  // ----------- 状态与进度条 -----------
+  function updateStatus(elBadge, value, pass, excellent){
+    elBadge.className = 'badge';
+    if(value >= excellent){ elBadge.classList.add('ok'); elBadge.textContent='优秀'; elBadge.classList.add('pulse'); }
+    else if(value >= pass){ elBadge.classList.add('good'); elBadge.textContent='合格'; }
+    else if(value > 0){ elBadge.classList.add('warn'); elBadge.textContent='未达标'; }
+    else { elBadge.classList.add('bad'); elBadge.textContent='—'; }
+  }
+  function updateBar(elBar, value, max){
+    const pct = Math.max(0, Math.min(100, value/max*100));
+    elBar.style.width = pct + '%';
+  }
+
+  // ----------- 同步控件工具 -----------
+  function syncPair(rangeEl, numEl, set){
+    function apply(v){ v = Math.max(parseFloat(rangeEl.min), Math.min(parseFloat(rangeEl.max), v)); rangeEl.value = v; numEl.value = v; set(v); }
+    rangeEl.addEventListener('input', e=> apply(parseFloat(e.target.value)));
+    numEl.addEventListener('input', e=> apply(parseFloat(e.target.value||0)));
+  }
+
+  // ----------- 预测一：HDPE/LDPE -----------
+  (function(){
+    const rH = document.getElementById('a_hdpe');
+    const nH = document.getElementById('a_hdpe_n');
+    const rL = document.getElementById('a_ldpe');
+    const nL = document.getElementById('a_ldpe_n');
+    const elVal = document.getElementById('a_value');
+    const elBadge = document.getElementById('a_status');
+    const elBar = document.getElementById('a_bar');
+    const elSum = document.getElementById('a_sum_note');
+
+    function render(){
+      // 保证总和=100：随 HDPE 变动，LDPE 自动补足；随 LDPE 变动，HDPE 自动补足
+      let H = parseInt(rH.value), L = 100 - H;
+      rL.value = L; nL.value = L; nH.value = H;
+      const v = calcA(H, L);
+      animateNumber(elVal, v);
+      updateStatus(elBadge, v, 1000, 1200);
+      updateBar(elBar, v, 1500);
+      elSum.innerHTML = `当前配比：HDPE <b>${H}</b>% + LDPE <b>${L}</b>% = 100%`;
+    }
+    syncPair(rH, nH, (v)=>{ rL.value = 100 - v; nL.value = 100 - v; render(); });
+    // 允许从 LDPE 侧拖动
+    syncPair(rL, nL, (v)=>{ rH.value = 100 - v; nH.value = 100 - v; render(); });
+    render();
+  })();
+
+  // ----------- 预测二：HDPE/PP/SBS -----------
+  (function(){
+    const rH = document.getElementById('b_hdpe');
+    const nH = document.getElementById('b_hdpe_n');
+    const rS = document.getElementById('b_sbs');
+    const nS = document.getElementById('b_sbs_n');
+    const rP = document.getElementById('b_pp');
+    const nP = document.getElementById('b_pp_n');
+    const tip = document.getElementById('b_sbs_tip');
+
+    const elVal = document.getElementById('b_value');
+    const elBadge = document.getElementById('b_status');
+    const elBar = document.getElementById('b_bar');
+    const elSum = document.getElementById('b_sum_note');
+
+    function clampMix(){
+      // SBS <= 50 已由控件限制；还需确保 H + S <= 100
+      let H = parseInt(rH.value); let S = parseInt(rS.value);
+      if(H + S > 100){ H = 100 - S; rH.value = H; nH.value = H; }
+      nS.max = 50; rS.max = 50; // 保持限制
+      tip.style.display = (S > 50) ? 'inline-flex' : 'none';
+      const P = 100 - H - S; rP.value = P; nP.value = P; return {H,S,P};
+    }
+
+    function render(){
+      const {H,S,P} = clampMix();
+      const v = calcB(H, P, S);
+      animateNumber(elVal, v);
+      updateStatus(elBadge, v, 60, 80);
+      updateBar(elBar, v, 120);
+      elSum.innerHTML = `当前配比：HDPE <b>${H}</b>% + PP <b>${P}</b>% + SBS <b>${S}</b>% = 100%`;
+    }
+
+    syncPair(rH, nH, ()=>render());
+    syncPair(rS, nS, (v)=>{ if(v>50){ rS.value=50; nS.value=50; } render(); });
+    render();
+  })();
+
+  // ----------- 重置 -----------
+  document.getElementById('resetAll').addEventListener('click', ()=>{
+    // 卡片A：HDPE=100, LDPE=0
+    document.getElementById('a_hdpe').value = 100;
+    document.getElementById('a_hdpe_n').value = 100;
+    document.getElementById('a_ldpe').value = 0;
+    document.getElementById('a_ldpe_n').value = 0;
+    // 触发渲染
+    document.getElementById('a_hdpe').dispatchEvent(new Event('input'));
+
+    // 卡片B：PP=100, HDPE=0, SBS=0
+    document.getElementById('b_hdpe').value = 0;
+    document.getElementById('b_hdpe_n').value = 0;
+    document.getElementById('b_sbs').value = 0;
+    document.getElementById('b_sbs_n').value = 0;
+    document.getElementById('b_pp').value = 100;
+    document.getElementById('b_pp_n').value = 100;
+    document.getElementById('b_hdpe').dispatchEvent(new Event('input'));
+  });
+</script>
+</body>
+</html>
