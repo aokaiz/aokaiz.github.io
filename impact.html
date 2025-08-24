@@ -21,7 +21,10 @@
     .grid{display:grid;gap:18px}
     .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
     @media (max-width: 900px){.grid-2{grid-template-columns:1fr}}
-
+    .slider-group {
+    flex-direction: column; /* 垂直排列 */
+    gap: 10px;
+    }
     .card{background:var(--card);border-radius:18px;box-shadow:var(--ring);padding:18px 18px 16px}
     .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
     .controls{display:grid;gap:12px;margin-top:10px}
