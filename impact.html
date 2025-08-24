@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>增韧改性仿真</title>
+  <style>
+    :root{
+      --bg:#f7f7fb; --fg:#1f2937; --muted:#6b7280; --card:#ffffff; --accent:#2563eb; --accent-2:#22c55e; --warn:#ef4444;
+      --ring: 0 10px 25px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--fg);} 
+    h1,h2{margin:0 0 .5rem}
+    h1{font-size:clamp(22px,3.5vw,34px)}
+    h2{font-size:clamp(18px,2.4vw,24px)}
+    p{color:var(--muted)}
+
+    .container{max-width:1100px;margin:32px auto;padding:0 16px}
+    .grid{display:grid;gap:18px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width: 900px){.grid-2{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border-radius:18px;box-shadow:var(--ring);padding:18px 18px 16px}
+    .row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px}
+    .controls{display:grid;gap:12px;margin-top:10px}
+    .ctrl{display:grid;grid-template-columns:140px 1fr 90px;gap:10px;align-items:center}
+    .ctrl input[type=number]{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px}
+    .ctrl input[type=range]{width:100%}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#eef2ff;color:#1e40af;font-weight:600;font-size:13px}
+    .muted{font-size:13px;color:var(--muted)}
+
+    .out{display:flex;align-items:center;gap:14px;margin-top:10px}
+    .big{font-size:clamp(28px,5vw,42px);font-weight:800;letter-spacing:.5px}
+    .unit{color:var(--muted);font-size:14px}
+
+    .bar{position:relative;height:12px;background:#eef2f7;border-radius:999px;overflow:hidden}
+    .bar>span{position:absolute;inset:0 0 0 auto;width:0;background:linear-gradient(90deg,var(--accent),#60a5fa);}
+
+    .formula{margin-top:12px;padding:10px 12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12.5px;white-space:pre-wrap;word-break:break-word}
+
+    .row-actions{display:flex;gap:10px}
+    .btn{appearance:none;border:0;border-radius:12px;background:var(--fg);color:#fff;padding:10px 14px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:#11182710;color:var(--fg);border:1px solid #e5e7eb}
+    .warn{color:var(--warn);font-size:13px}
+
+    .footer{opacity:.7;text-align:center;margin:24px 0 10px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>增韧改性仿真</h1>
+    <p class="muted">单页应用｜交互式输入配比，实时预测缺口冲击强度（kJ/m²）。</p>
+
+    <div class="grid grid-2">
+      <!-- 模块 1：HDPE / LDPE 共混 -->
+      <section class="card" id="app1">
+        <div class="row">
+          <div>
+            <h2>1) HDPE / LDPE 共混</h2>
+            <p class="muted">质量分数自动保持和为 100；拖动任一滑块或直接输入数值。</p>
+          </div>
+          <span class="badge">模型：三次多项式</span>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl">
+            <label>HDPE（%）</label>
+            <input type="range" id="hdpe1" min="0" max="100" step="0.1" value="50">
+            <input type="number" id="nhdpe1" min="0" max="100" step="0.1" value="50">
+          </div>
+          <div class="ctrl">
+            <label>LDPE（%）</label>
+            <input type="range" id="ldpe1" min="0" max="100" step="0.1" value="50">
+            <input type="number" id="nldpe1" min="0" max="100" step="0.1" value="50">
+          </div>
+          <div class="row">
+            <div class="out"><span class="big" id="out1">0.00</span><span class="unit">kJ/m²</span></div>
+            <div class="row-actions">
+              <button class="btn secondary" id="reset1">重置</button>
+            </div>
+          </div>
+          <div class="bar" aria-hidden="true"><span id="bar1"></span></div>
+        </div>
+
+        <div class="formula" id="f1"></div>
+      </section>
+
+      <!-- 模块 2：HDPE / PP / SBS 共混 -->
+      <section class="card" id="app2">
+        <div class="row">
+          <div>
+            <h2>2) HDPE / PP / SBS 共混</h2>
+            <p class="muted">总和固定为 100，SBS ≤ 50%。PP 自动由 <code>100 - HDPE - SBS</code> 计算。</p>
+          </div>
+          <span class="badge">模型：三次多项式</span>
+        </div>
+
+        <div class="controls">
+          <div class="ctrl">
+            <label>SBS（%）</label>
+            <input type="range" id="sbs2" min="0" max="50" step="0.1" value="20">
+            <input type="number" id="nsbs2" min="0" max="50" step="0.1" value="20">
+          </div>
+          <div class="ctrl">
+            <label>HDPE（%）</label>
+            <input type="range" id="hdpe2" min="0" max="80" step="0.1" value="40">
+            <input type="number" id="nhdpe2" min="0" max="80" step="0.1" value="40">
+          </div>
+          <div class="ctrl">
+            <label>PP（%）</label>
+            <input type="range" id="pp2" min="0" max="100" step="0.1" value="40" disabled>
+            <input type="number" id="npp2" min="0" max="100" step="0.1" value="40" disabled>
+          </div>
+          <div class="row">
+            <div class="out"><span class="big" id="out2">0.00</span><span class="unit">kJ/m²</span></div>
+            <div class="row-actions">
+              <button class="btn secondary" id="reset2">重置</button>
+            </div>
+          </div>
+          <div class="bar" aria-hidden="true"><span id="bar2"></span></div>
+          <div class="warn" id="warn2" style="display:none">配比非法（总和需为100，且 SBS ≤ 50）。已自动纠正。</div>
+        </div>
+
+        <div class="formula" id="f2"></div>
+      </section>
+    </div>
+
+    <p class="footer">提示：公式来自用户提供的拟合表达式；显示值为实时计算结果。
+        ©CIIT aokaiz</p>
+  </div>
+
+  <script>
+    // ---------- 工具：数值动画 ----------
+    function animateNumber(el, to, duration=400){
+      const from = parseFloat(el.dataset.val || '0');
+      const start = performance.now();
+      function frame(t){
+        const p = Math.min(1, (t-start)/duration);
+        const ease = 1 - Math.pow(1-p, 3); // easeOutCubic
+        const val = from + (to-from)*ease;
+        el.textContent = val.toFixed(2);
+        if(p<1) requestAnimationFrame(frame); else el.dataset.val = to;
+      }
+      requestAnimationFrame(frame);
+    }
+    function setBar(el, val, max=120){
+      const w = Math.max(0, Math.min(100, (val/max)*100));
+      el.style.width = w + '%';
+    }
+    function setBar2(el, val, max=1500){
+      const w = Math.max(0, Math.min(100, (val/max)*100));
+      el.style.width = w + '%';
+    }
+
+    // ---------- 模块1：HDPE/LDPE ----------
+    const hdpe1 = document.getElementById('hdpe1');
+    const ldpe1 = document.getElementById('ldpe1');
+    const nhdpe1 = document.getElementById('nhdpe1');
+    const nldpe1 = document.getElementById('nldpe1');
+    const out1 = document.getElementById('out1');
+    const bar1 = document.getElementById('bar1');
+
+    // 公式（来自用户给定）
+    // Impact_Strength = 1402.0766 + (-0.0000)*HDPE^2 + (0.0000)*HDPE LDPE + (0.0000)*LDPE^2 + (-0.0012)*HDPE^3 + (-0.0011)*HDPE^2 LDPE + (0.0016)*HDPE LDPE^2 + (-0.0003)*LDPE^3
+    function predict1(HDPE, LDPE){
+      const t1 = 1402.0766
+        + (-0.0000)*Math.pow(HDPE,2)
+        + (0.0000)*(HDPE*LDPE)
+        + (0.0000)*Math.pow(LDPE,2)
+        + (-0.0012)*Math.pow(HDPE,3)
+        + (-0.0011)*(Math.pow(HDPE,2)*LDPE)
+        + (0.0016)*(HDPE*Math.pow(LDPE,2))
+        + (-0.0003)*Math.pow(LDPE,3);
+      return t1; // kJ/m^2
+    }
+
+    function sync1(from){
+      let H = parseFloat(hdpe1.value), L = 100 - H;
+      if(from==='numH'){ H = clamp(parseFloat(nhdpe1.value),0,100); L = 100 - H; }
+      if(from==='numL'){ L = clamp(parseFloat(nldpe1.value),0,100); H = 100 - L; }
+      if(from==='slideH'){ L = 100 - H; }
+      if(from==='slideL'){ H = 100 - L; }
+      // 写回
+      hdpe1.value = H.toFixed(1); ldpe1.value = L.toFixed(1);
+      nhdpe1.value = H.toFixed(1); nldpe1.value = L.toFixed(1);
+      const y = predict1(H,L);
+      animateNumber(out1, y);
+      setBar2(bar1, y);
+    }
+
+    document.getElementById('reset1').addEventListener('click', ()=>{ hdpe1.value=50; ldpe1.value=50; nhdpe1.value=50; nldpe1.value=50; sync1(); });
+    hdpe1.addEventListener('input', ()=>sync1('slideH'));
+    ldpe1.addEventListener('input', ()=>sync1('slideL'));
+    nhdpe1.addEventListener('input', ()=>sync1('numH'));
+    nldpe1.addEventListener('input', ()=>sync1('numL'));
+
+    // 显示公式
+    document.getElementById('f1').textContent = 
+`Impact_Strength = 1402.0766 
+  + (-0.0000)*HDPE^2 + (0.0000)*HDPE*LDPE + (0.0000)*LDPE^2
+  + (-0.0012)*HDPE^3 + (-0.0011)*HDPE^2*LDPE
+  + (0.0016)*HDPE*LDPE^2 + (-0.0003)*LDPE^3`;
+
+    // ---------- 模块2：HDPE/PP/SBS ----------
+    const sbs2 = document.getElementById('sbs2');
+    const hdpe2 = document.getElementById('hdpe2');
+    const pp2 = document.getElementById('pp2');
+    const nsbs2 = document.getElementById('nsbs2');
+    const nhdpe2 = document.getElementById('nhdpe2');
+    const npp2 = document.getElementById('npp2');
+    const out2 = document.getElementById('out2');
+    const bar2 = document.getElementById('bar2');
+    const warn2 = document.getElementById('warn2');
+
+    // 公式（来自用户给定）
+    // Impact_Strength = -0.0000*1 + -0.0000*PP + 0.0000*HDPE + -0.0000*SBS + -0.0000*PP^2 + 0.0000*PP HDPE + 0.0000*PP SBS + 0.0000*HDPE^2 + 0.0000*HDPE SBS + -0.0000*SBS^2 + -0.0001*PP^3 + -0.0002*PP^2 HDPE + -0.0004*PP^2 SBS + -0.0002*PP HDPE^2 + 0.0008*PP HDPE SBS + 0.0000*PP SBS^2 + -0.0002*HDPE^3 + 0.0008*HDPE^2 SBS + -0.0015*HDPE SBS^2 + 0.0002*SBS^3 + 131.5583
+    function predict2(HDPE, PP, SBS){
+      const y = (-0.0000)*1 + (-0.0000)*PP + (0.0000)*HDPE + (-0.0000)*SBS
+        + (-0.0000)*Math.pow(PP,2) + (0.0000)*(PP*HDPE) + (0.0000)*(PP*SBS)
+        + (0.0000)*Math.pow(HDPE,2) + (0.0000)*(HDPE*SBS) + (-0.0000)*Math.pow(SBS,2)
+        + (-0.0001)*Math.pow(PP,3) + (-0.0002)*(Math.pow(PP,2)*HDPE) + (-0.0004)*(Math.pow(PP,2)*SBS)
+        + (-0.0002)*(PP*Math.pow(HDPE,2)) + (0.0008)*(PP*HDPE*SBS) + (0.0000)*(PP*Math.pow(SBS,2))
+        + (-0.0002)*Math.pow(HDPE,3) + (0.0008)*(Math.pow(HDPE,2)*SBS) + (-0.0015)*(HDPE*Math.pow(SBS,2))
+        + (0.0002)*Math.pow(SBS,3) + 131.5583;
+      return y;
+    }
+
+    function clamp(v, min, max){ return isNaN(v)?min: Math.max(min, Math.min(max, v)); }
+
+    function recalc2(source){
+      let SBS = parseFloat(sbs2.value);
+      let HDPE = parseFloat(hdpe2.value);
+      // 限制 SBS ≤ 50
+      SBS = clamp(SBS, 0, 50);
+      // HDPE 上限受 SBS 影响，保证 PP 不为负
+      const HDPE_MAX = 100 - SBS; // PP >=0
+      HDPE = clamp(HDPE, 0, HDPE_MAX);
+      let PP = 100 - HDPE - SBS;
+
+      // 若由数字输入触发
+      if(source==='numS'){ SBS = clamp(parseFloat(nsbs2.value),0,50); }
+      if(source==='numH'){ HDPE = clamp(parseFloat(nhdpe2.value),0,100-SBS); }
+
+      // 重新计算 PP
+      PP = 100 - HDPE - SBS;
+      if(PP < 0){
+        // 纠正：优先降低 HDPE
+        HDPE = Math.max(0, 100 - SBS);
+        PP = 100 - HDPE - SBS;
+      }
+
+      // 写回 UI
+      sbs2.value = SBS.toFixed(1); nsbs2.value = SBS.toFixed(1);
+      hdpe2.value = HDPE.toFixed(1); nhdpe2.value = HDPE.toFixed(1);
+      pp2.value = PP.toFixed(1); npp2.value = PP.toFixed(1);
+
+      // 提示
+      const invalid = (SBS>50 || SBS<0 || PP<0 || (SBS+HDPE+PP).toFixed(1)!=='100.0');
+      warn2.style.display = invalid? 'block':'none';
+
+      const y = predict2(HDPE, PP, SBS);
+      animateNumber(out2, y);
+      setBar(bar2, y);
+    }
+
+    document.getElementById('reset2').addEventListener('click', ()=>{
+      sbs2.value=20; nsbs2.value=20; hdpe2.value=40; nhdpe2.value=40; recalc2();
+    });
+    sbs2.addEventListener('input', ()=>recalc2('slideS'));
+    hdpe2.addEventListener('input', ()=>recalc2('slideH'));
+    nsbs2.addEventListener('input', ()=>recalc2('numS'));
+    nhdpe2.addEventListener('input', ()=>recalc2('numH'));
+
+    document.getElementById('f2').textContent = 
+`Impact_Strength = -0.0000*1 + -0.0000*PP + 0.0000*HDPE + -0.0000*SBS
+  + -0.0000*PP^2 + 0.0000*PP*HDPE + 0.0000*PP*SBS + 0.0000*HDPE^2 + 0.0000*HDPE*SBS + -0.0000*SBS^2
+  + -0.0001*PP^3 + -0.0002*PP^2*HDPE + -0.0004*PP^2*SBS + -0.0002*PP*HDPE^2 + 0.0008*PP*HDPE*SBS + 0.0000*PP*SBS^2
+  + -0.0002*HDPE^3 + 0.0008*HDPE^2*SBS + -0.0015*HDPE*SBS^2 + 0.0002*SBS^3 + 131.5583`;
+
+    // 初始运算
+    sync1();
+    recalc2();
+  </script>
+</body>
+</html>
