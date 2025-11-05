@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高分子材料3D打印仿真</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+        
+        .simulation-area {
+            flex: 2;
+            min-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        
+        .parameter {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        #start-btn {
+            background-color: #2ecc71;
+            color: white;
+            flex: 2;
+        }
+        
+        #reset-btn {
+            background-color: #e74c3c;
+            color: white;
+            flex: 1;
+        }
+        
+        #pause-btn {
+            background-color: #f39c12;
+            color: white;
+            flex: 1;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .canvas-container {
+            flex: 1;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        canvas {
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+        
+        .analysis {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .quality-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .indicator {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+        }
+        
+        .indicator-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .good {
+            color: #2ecc71;
+        }
+        
+        .fair {
+            color: #f39c12;
+        }
+        
+        .poor {
+            color: #e74c3c;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .print-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>高分子材料3D打印过程仿真</h1>
+            <p class="subtitle">调整参数观察PLA和ABS材料的打印效果</p>
+        </header>
+        
+        <div class="content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <h2>打印参数设置</h2>
+                    
+                    <div class="parameter">
+                        <label for="material">打印材料</label>
+                        <select id="material">
+                            <option value="PLA">PLA (聚乳酸)</option>
+                            <option value="ABS">ABS (丙烯腈-丁二烯-苯乙烯)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="parameter">
+                        <label for="shape">打印形状</label>
+                        <select id="shape">
+                            <option value="cylinder">圆柱体</option>
+                            <option value="cube">长方体</option>
+                        </select>
+                    </div>
+                    
+                    <div class="parameter">
+                        <label for="speed">打印速度 (mm/s)</label>
+                        <input type="range" id="speed" min="10" max="100" value="50">
+                        <div class="value-display">
+                            <span>慢</span>
+                            <span id="speed-value">50</span>
+                            <span>快</span>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter">
+                        <label for="layer-height">层厚 (mm)</label>
+                        <input type="range" id="layer-height" min="0.1" max="0.4" step="0.05" value="0.2">
+                        <div class="value-display">
+                            <span>薄</span>
+                            <span id="layer-height-value">0.2</span>
+                            <span>厚</span>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter">
+                        <label for="temperature">喷嘴温度 (°C)</label>
+                        <input type="range" id="temperature" min="180" max="260" value="200">
+                        <div class="value-display">
+                            <span>低</span>
+                            <span id="temperature-value">200</span>
+                            <span>高</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="start-btn">开始打印</button>
+                    <button id="pause-btn">暂停</button>
+                    <button id="reset-btn">重置</button>
+                </div>
+                
+                <div class="control-group">
+                    <h2>打印效果分析</h2>
+                    <p>当前设置下的打印质量预测：</p>
+                    
+                    <div class="quality-indicators">
+                        <div class="indicator">
+                            <div>层间粘合</div>
+                            <div class="indicator-value good" id="layer-bonding">良好</div>
+                        </div>
+                        <div class="indicator">
+                            <div>表面质量</div>
+                            <div class="indicator-value fair" id="surface-quality">一般</div>
+                        </div>
+                        <div class="indicator">
+                            <div>尺寸精度</div>
+                            <div class="indicator-value good" id="dimensional-accuracy">良好</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="simulation-area">
+                <div class="canvas-container">
+                    <canvas id="print-canvas" width="500" height="400"></canvas>
+                </div>
+                
+                <div class="analysis">
+                    <h3>打印进度</h3>
+                    <div class="progress-bar">
+                        <div class="progress" id="print-progress"></div>
+                    </div>
+                    <div class="print-info">
+                        <span id="current-layer">当前层: 0/0</span>
+                        <span id="print-time">打印时间: 0:00</span>
+                    </div>
+                </div>
+                
+                <div class="analysis">
+                    <h3>参数影响分析</h3>
+                    <p id="analysis-text">调整参数观察打印效果的变化。较高的打印速度可能导致层间粘合不良，而较低的温度可能影响材料流动性。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('print-canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const materialSelect = document.getElementById('material');
+        const shapeSelect = document.getElementById('shape');
+        const speedSlider = document.getElementById('speed');
+        const layerHeightSlider = document.getElementById('layer-height');
+        const temperatureSlider = document.getElementById('temperature');
+        const speedValue = document.getElementById('speed-value');
+        const layerHeightValue = document.getElementById('layer-height-value');
+        const temperatureValue = document.getElementById('temperature-value');
+        const printProgress = document.getElementById('print-progress');
+        const currentLayer = document.getElementById('current-layer');
+        const printTime = document.getElementById('print-time');
+        const analysisText = document.getElementById('analysis-text');
+        const layerBonding = document.getElementById('layer-bonding');
+        const surfaceQuality = document.getElementById('surface-quality');
+        const dimensionalAccuracy = document.getElementById('dimensional-accuracy');
+
+        // 打印状态变量
+        let isPrinting = false;
+        let isPaused = false;
+        let currentLayerIndex = 0;
+        let totalLayers = 0;
+        let startTime = 0;
+        let timerInterval = null;
+        let printInterval = null;
+
+        // 更新参数显示
+        speedSlider.addEventListener('input', () => {
+            speedValue.textContent = speedSlider.value;
+            updateAnalysis();
+        });
+
+        layerHeightSlider.addEventListener('input', () => {
+            layerHeightValue.textContent = layerHeightSlider.value;
+            updateAnalysis();
+        });
+
+        temperatureSlider.addEventListener('input', () => {
+            temperatureValue.textContent = temperatureSlider.value;
+            updateAnalysis();
+        });
+
+        materialSelect.addEventListener('change', updateAnalysis);
+        shapeSelect.addEventListener('change', updateAnalysis);
+
+        // 更新打印效果分析
+        function updateAnalysis() {
+            const speed = parseInt(speedSlider.value);
+            const layerHeight = parseFloat(layerHeightSlider.value);
+            const temperature = parseInt(temperatureSlider.value);
+            const material = materialSelect.value;
+            const shape = shapeSelect.value;
+            
+            // 层间粘合分析
+            if (temperature < (material === 'PLA' ? 190 : 230) || speed > 70) {
+                layerBonding.textContent = "较差";
+                layerBonding.className = "indicator-value poor";
+            } else if (temperature < (material === 'PLA' ? 200 : 240) || speed > 50) {
+                layerBonding.textContent = "一般";
+                layerBonding.className = "indicator-value fair";
+            } else {
+                layerBonding.textContent = "良好";
+                layerBonding.className = "indicator-value good";
+            }
+            
+            // 表面质量分析
+            if (layerHeight > 0.3 || speed > 80) {
+                surfaceQuality.textContent = "较差";
+                surfaceQuality.className = "indicator-value poor";
+            } else if (layerHeight > 0.25 || speed > 60) {
+                surfaceQuality.textContent = "一般";
+                surfaceQuality.className = "indicator-value fair";
+            } else {
+                surfaceQuality.textContent = "良好";
+                surfaceQuality.className = "indicator-value good";
+            }
+            
+            // 尺寸精度分析
+            if (temperature < (material === 'PLA' ? 190 : 230) || temperature > (material === 'PLA' ? 220 : 260)) {
+                dimensionalAccuracy.textContent = "较差";
+                dimensionalAccuracy.className = "indicator-value poor";
+            } else if (temperature < (material === 'PLA' ? 200 : 240) || temperature > (material === 'PLA' ? 210 : 250)) {
+                dimensionalAccuracy.textContent = "一般";
+                dimensionalAccuracy.className = "indicator-value fair";
+            } else {
+                dimensionalAccuracy.textContent = "良好";
+                dimensionalAccuracy.className = "indicator-value good";
+            }
+            
+            // 更新分析文本
+            let analysis = "";
+            
+            if (speed > 70) {
+                analysis += "当前打印速度较高，可能导致层间粘合不良和表面粗糙。";
+            } else if (speed < 30) {
+                analysis += "当前打印速度较低，打印时间会较长，但打印质量通常较好。";
+            }
+            
+            if (layerHeight > 0.3) {
+                analysis += " 层厚较大，打印速度较快但表面质量会下降。";
+            } else if (layerHeight < 0.15) {
+                analysis += " 层厚较小，打印质量较高但打印时间会显著增加。";
+            }
+            
+            if (temperature < (material === 'PLA' ? 190 : 230)) {
+                analysis += " 喷嘴温度较低，可能导致材料挤出不畅和层间粘合问题。";
+            } else if (temperature > (material === 'PLA' ? 220 : 260)) {
+                analysis += " 喷嘴温度较高，可能导致材料降解和拉丝现象。";
+            }
+            
+            if (analysis === "") {
+                analysis = "当前参数设置较为合理，预计打印效果良好。";
+            }
+            
+            analysisText.textContent = analysis;
+        }
+
+        // 初始化分析
+        updateAnalysis();
+
+        // 开始打印
+        startBtn.addEventListener('click', () => {
+            if (isPrinting && !isPaused) return;
+            
+            if (!isPrinting) {
+                // 开始新的打印
+                isPrinting = true;
+                isPaused = false;
+                currentLayerIndex = 0;
+                startTime = Date.now();
+                
+                // 根据层厚计算总层数
+                const layerHeight = parseFloat(layerHeightSlider.value);
+                totalLayers = Math.floor(100 / (layerHeight * 10));
+                
+                // 开始计时器
+                startTimer();
+                
+                // 开始打印动画
+                startPrintAnimation();
+            } else if (isPaused) {
+                // 恢复打印
+                isPaused = false;
+                startTimer();
+                startPrintAnimation();
+            }
+            
+            updateButtons();
+        });
+
+        // 暂停打印
+        pauseBtn.addEventListener('click', () => {
+            if (!isPrinting) return;
+            
+            isPaused = !isPaused;
+            
+            if (isPaused) {
+                clearInterval(timerInterval);
+                clearInterval(printInterval);
+            } else {
+                startTimer();
+                startPrintAnimation();
+            }
+            
+            updateButtons();
+        });
+
+        // 重置打印
+        resetBtn.addEventListener('click', () => {
+            isPrinting = false;
+            isPaused = false;
+            currentLayerIndex = 0;
+            
+            clearInterval(timerInterval);
+            clearInterval(printInterval);
+            
+            printProgress.style.width = '0%';
+            currentLayer.textContent = '当前层: 0/0';
+            printTime.textContent = '打印时间: 0:00';
+            
+            drawPrintBed();
+            updateButtons();
+        });
+
+        // 更新按钮状态
+        function updateButtons() {
+            if (!isPrinting) {
+                startBtn.textContent = '开始打印';
+                pauseBtn.disabled = true;
+            } else if (isPaused) {
+                startBtn.textContent = '继续打印';
+                pauseBtn.textContent = '已暂停';
+            } else {
+                startBtn.textContent = '打印中...';
+                startBtn.disabled = true;
+                pauseBtn.textContent = '暂停';
+                pauseBtn.disabled = false;
+            }
+        }
+
+        // 开始计时器
+        function startTimer() {
+            clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                printTime.textContent = `打印时间: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // 开始打印动画
+        function startPrintAnimation() {
+            clearInterval(printInterval);
+            
+            const speed = parseInt(speedSlider.value);
+            const layerHeight = parseFloat(layerHeightSlider.value);
+            const intervalTime = Math.max(100, 1000 - (speed * 8));
+            
+            printInterval = setInterval(() => {
+                if (currentLayerIndex < totalLayers) {
+                    currentLayerIndex++;
+                    const progress = (currentLayerIndex / totalLayers) * 100;
+                    printProgress.style.width = `${progress}%`;
+                    currentLayer.textContent = `当前层: ${currentLayerIndex}/${totalLayers}`;
+                    
+                    drawPrintingObject();
+                } else {
+                    // 打印完成
+                    clearInterval(printInterval);
+                    isPrinting = false;
+                    updateButtons();
+                    startBtn.disabled = false;
+                    startBtn.textContent = '重新打印';
+                }
+            }, intervalTime);
+        }
+
+        // 绘制打印平台
+        function drawPrintBed() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制打印平台
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(50, 300, 400, 20);
+            
+            // 绘制平台网格
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 0.5;
+            
+            for (let x = 50; x <= 450; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, 300);
+                ctx.lineTo(x, 320);
+                ctx.stroke();
+            }
+            
+            for (let y = 300; y <= 320; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(450, y);
+                ctx.stroke();
+            }
+        }
+
+        // 绘制打印中的对象
+        function drawPrintingObject() {
+            drawPrintBed();
+            
+            const shape = shapeSelect.value;
+            const material = materialSelect.value;
+            const temperature = parseInt(temperatureSlider.value);
+            
+            // 根据温度设置颜色
+            let color;
+            if (material === 'PLA') {
+                // PLA颜色随温度变化：从深蓝到浅黄
+                const blue = Math.max(0, 255 - (temperature - 180) * 3);
+                const red = Math.min(255, (temperature - 180) * 3);
+                color = `rgb(${red}, ${red}, ${blue})`;
+            } else {
+                // ABS颜色随温度变化：从深红到浅黄
+                const red = 200;
+                const green = Math.min(200, (temperature - 180) * 2);
+                color = `rgb(${red}, ${green}, 0)`;
+            }
+            
+            ctx.fillStyle = color;
+            
+            const progress = currentLayerIndex / totalLayers;
+            const maxHeight = 200;
+            const currentHeight = maxHeight * progress;
+            
+            if (shape === 'cylinder') {
+                // 绘制圆柱体
+                const centerX = 250;
+                const centerY = 300;
+                const radius = 80;
+                
+                // 绘制侧面
+                ctx.beginPath();
+                ctx.moveTo(centerX - radius, centerY);
+                ctx.lineTo(centerX - radius, centerY - currentHeight);
+                ctx.arc(centerX, centerY - currentHeight, radius, Math.PI, 0, false);
+                ctx.lineTo(centerX + radius, centerY);
+                ctx.arc(centerX, centerY, radius, 0, Math.PI, true);
+                ctx.closePath();
+                ctx.fill();
+                
+                // 绘制顶部
+                if (currentHeight > 0) {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY - currentHeight, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // 绘制打印头
+                drawPrintHead(centerX, centerY - currentHeight - 10);
+            } else {
+                // 绘制长方体
+                const width = 160;
+                const depth = 120;
+                const x = 250 - width/2;
+                const y = 300 - currentHeight;
+                
+                ctx.fillRect(x, y, width, currentHeight);
+                
+                // 绘制打印头
+                drawPrintHead(250, y - 10);
+            }
+            
+            // 绘制当前打印层
+            if (currentHeight > 0) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 1;
+                
+                if (shape === 'cylinder') {
+                    ctx.beginPath();
+                    ctx.arc(250, 300 - currentHeight, 80, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else {
+                    ctx.strokeRect(250 - 80, 300 - currentHeight, 160, 0);
+                }
+            }
+        }
+
+        // 绘制打印头
+        function drawPrintHead(x, y) {
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(x - 12, y - 20, 24, 20);
+            
+            // 绘制挤出材料
+            ctx.fillStyle = materialSelect.value === 'PLA' ? '#3498db' : '#e67e22';
+            ctx.beginPath();
+            ctx.arc(x, y + 8, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 初始化
+        drawPrintBed();
+        updateButtons();
+    </script>
+</body>
+</html>
